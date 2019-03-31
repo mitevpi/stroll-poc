@@ -82,15 +82,15 @@ ColorParse.GetPaletteAnalysis(47.660259, -122.408417).then(result => {
 Building graphs and calculating paths of travel.
 
 ```js
-RouteData.GetGraph(47.660273, -122.409887, 1, 0.5, 0.6).then(result => {
-  console.log(result);
-})
+RouteData.GetGraphData(47.660273, -122.409887, 1, 0.5, 0.6).then(x => {
+  console.log(x);
+});
 ```
 
 ```js
-RouteData.FindNaturePaths(47.660273, -122.409887, 1, 0.5, 0.7).then(x => {
-  console.log(x);
-});
+RouteData.GetGraph(47.660273, -122.409887, 1, 0.5, 0.6).then(result => {
+  console.log(result);
+})
 ```
 
 ```js
@@ -109,3 +109,15 @@ RouteData.GetGraph(47.660273, -122.409887, 1, 0.5, 0.7).then(x => {
 })
 ```
 
+```js
+RouteData.FindNaturePaths(47.660273, -122.409887, 1, 0.5, 0.7).then(x => {
+  console.log(x);
+});
+```
+
+```js
+RouteData.FindNaturePaths(47.660273, -122.409887, 1, 0.5, 0.7).then(x => {
+  let result = RouteData.FindTopNaturePaths(x);
+  console.log(result);
+});
+```
