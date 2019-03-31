@@ -3,9 +3,9 @@
 
 # Stroll
 
-TT AEC Hackathon 2019 - Seattle
+TT AEC Hackathon 2019 - Seattle Project
 
-This is an app which helps people find the most nature-filled walks/paths to take thrughout the day in order to stimulate creativity and boost mental health.
+This is the computational library which powers the Stroll App which helps people find the most nature-filled walks/paths to take thrughout the day in order to stimulate creativity and boost mental health.
 
 Pathfinding is performed via Weighted Graph computation, with weights being given for characteristics such as proximity to parks, and amount of nature in the field of view.
 
