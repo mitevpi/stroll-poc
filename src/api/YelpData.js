@@ -44,7 +44,8 @@ class YelpData {
             resolve(parkData);
           });
       });
-    } catch {
+    } catch(err) {
+      //Block of code to handle errors
       return [];
     }
   }

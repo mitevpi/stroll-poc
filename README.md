@@ -3,6 +3,8 @@
 
 # Stroll
 
+[![Generic badge](https://img.shields.io/badge/APP-GITHUB-Green.svg)](https://github.com/Brandoncyu/aechackathon2019) [![Generic badge](https://img.shields.io/badge/DOCUMENTATION-MD-Green.svg)](docs/)
+
 TT AEC Hackathon 2019 - Seattle Project
 
 This is the computational library which powers the Stroll App which helps people find the most nature-filled walks/paths to take thrughout the day in order to stimulate creativity and boost mental health.
