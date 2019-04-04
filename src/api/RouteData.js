@@ -2,7 +2,7 @@ const turf = require('turf');
 const turfrandom = require('@turf/random');
 let createGraph = require('ngraph.graph');
 let path = require('ngraph.path');
-var fs = require('fs');
+// var fs = require('fs');
 
 const ColorParse = require('./ColorParse');
 const YelpData = require('./YelpData');
@@ -17,7 +17,7 @@ class RouteData {
    * @param {Number} long Longitude of location.
    * @param {Number} radius The radius of the bounding geometry from the given lat/long origin.
    * @param {String} numPoints How many points to return
-   * @returns {Array} A collection of Turf.JS points.
+   * @returns {Array<turf.Point>} A collection of Turf.JS points.
    */
   static GetRandomPointGrid(lat, long, radius, numPoints) {
     let point = turf.point([lat, long]);
@@ -35,7 +35,7 @@ class RouteData {
    * @param {Number} long Longitude of location.
    * @param {Number} radius The radius of the bounding geometry from the given lat/long origin.
    * @param {Number} pointDist How far apart the points should be in the point grid.
-   * @returns {Array} A collection of Turf.JS points.
+   * @returns {Array<turf.Point>} A collection of Turf.JS points.
    */
   static GetPointGrid(lat, long, radius, pointDist) {
     let point = turf.point([lat, long]);
@@ -49,19 +49,16 @@ class RouteData {
   /**
    * Get graph object representing the points which are walkable given an origin lat/long, radius, and
    * distance between points for creation of a grid.
-   * @param {Number} lat Latitude of location.
-   * @param {Number} long Longitude of location.
-   * @param {Number} radius The radius of the bounding geometry from the given lat/long origin.
-   * @param {Number} pointDist How far apart the points should be in the point grid.
-   * @param {String} linkTolerance The minimum distance between points to be considered a "link".
+   * @param {Array<turf.Point>} grid A grid of turf.js points
+   * @param {Number} linkTolerance The minimum distance between points to be considered a 'link'.
    * @returns {Graph} A ngraph.graph object.
    */
-  static GetGraph(lat, long, radius, pointDist, linkTolerance) {
+  static GetGraph(grid, linkTolerance) {
     console.log('Staring Get Graph');
     let self = this;
     return new Promise(function (resolve, reject) {
 
-      self.GetGraphData(lat, long, radius, pointDist, linkTolerance).then(r => {
+      self.GetGraphData(grid, linkTolerance).then(r => {
         let graph = createGraph();
         r.map(o => {
           let idA = String(o.idA[0]) + '-' + String(o.idA[1]);
@@ -94,16 +91,12 @@ class RouteData {
   /**
    * Get graph data from the points which are walkable given an origin lat/long, radius, and
    * distance between points for creation of a grid.
-   * @param {Number} lat Latitude of location.
-   * @param {Number} long Longitude of location.
-   * @param {Number} radius The radius of the bounding geometry from the given lat/long origin.
-   * @param {Number} pointDist How far apart the points should be in the point grid.
-   * @param {String} linkTolerance The minimum distance between points to be considered a "link".
+   * @param {Array<turf.Point>} grid A grid of turf.js points
+   * @param {String} linkTolerance The minimum distance between points to be considered a 'link'.
    * @returns {Object} A ngraph.graph object.
    */
-  static async GetGraphData(lat, long, radius, pointDist, linkTolerance) {
+  static async GetGraphData(grid, linkTolerance) {
     console.log('Staring Get Graph Data');
-    let grid = this.GetPointGrid(lat, long, radius, pointDist);
     let promises = [];
 
     // add all points as nodes
@@ -146,9 +139,9 @@ class RouteData {
   }
 
   /**
-   * Find a path between two nodes on the graph, weighted by the "Green Score" weight of the nodes
+   * Find a path between two nodes on the graph, weighted by the 'Green Score' weight of the nodes
    * along the potential path.
-   * @param {Graph} graph A ngraph.graph object.
+   * @param {Graph} graph A ngraph.graph object with the nature-score data properties applied.
    * @param {String} idA Node ID of start point.
    * @param {String} idB Node ID of end point.
    * @returns {Object} A ngraph.path object.
@@ -161,7 +154,7 @@ class RouteData {
         if (overallScore < 1) {
           return 1;
         } else {
-          return overallScore
+          return overallScore;
         }
 
       },
@@ -175,91 +168,86 @@ class RouteData {
     return pathFinder.find(idA, idB);
   }
 
-    /**
+  /**
    * Evaluate a walkable region with views to naturegiven an origin lat/long, radius, and
    * distance between points for creation of a grid.
-   * @param {Number} lat Latitude of location.
-   * @param {Number} long Longitude of location.
-   * @param {Number} radius The radius of the bounding geometry from the given lat/long origin.
-   * @param {Number} pointDist How far apart the points should be in the point grid.
-   * @param {Number} linkTolerance The minimum distance between points to be considered a "link".
+   * @param {Graph} graph A ngraph.graph object with the nature-score data properties applied.
    * @returns {Array} An array of all possible paths;
    */
-  static FindNaturePaths(lat, long, radius, pointDist, linkTolerance) {
+  static FindNaturePaths(graph) {
     let self = this;
     console.log('Staring Find Nature Path');
     return new Promise(function (resolve, reject) {
+      let paths = [];
+      let nodes = [];
+      graph.forEachNode(function (node) {
+        nodes.push(node);
+      });
 
-      self.GetGraph(lat, long, radius, pointDist, linkTolerance).then(x => {
-        let paths = [];
-        let nodes = [];
-        x.forEachNode(function (node) {
-          nodes.push(node);
-        });
+      // tier 1 loop
+      nodes.map(nodeA => {
 
-        // tier 1 loop
-        nodes.map(nodeA => {
+        // tier 2 loop
+        nodes.map(nodeB => {
+          let path = self.FindPath(graph, nodeA.id, nodeB.id);
 
-          // tier 2 loop
-          nodes.map(nodeB => {
-            let path = self.FindPath(x, nodeA.id, nodeB.id);
-
-            if (path.length > 1) {
-              paths.push(path);
-            }
-          });
-
-        });
-
-        fs.writeFile("graphData.json", JSON.stringify(paths), function (err) {
-          if (err) {
-            console.log(err);
+          if (path.length > 1) {
+            paths.push(path);
           }
         });
 
-        resolve(paths);
+      });
 
-      })
+      fs.writeFile('graphData.json', JSON.stringify(paths), function (err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+
+      resolve(paths);
+
     });
   }
 
-    /**
+  /**
    * Get graph data from the points which are walkable given an origin lat/long, radius, and
    * distance between points for creation of a grid. Sort with the top nature walks first.
-   * @param {Object} json A serialized version of the JSON data comprising a ngraph.graph.
+   * @param {Object} json The raw path output of FindNaturePaths().
    * @returns {Array} A list of paths, sorted from most exposed to nature to least.
    */
   static FindTopNaturePaths(json) {
-    let returnObj = [];
+    return new Promise(function (resolve, reject) {
 
-    json.map(path =>{
-      let totalGreenScore = 0;
-      path.map(node => {
-        totalGreenScore = totalGreenScore + node.data.greenScore + node.data.parkScore;
+      let returnObj = [];
+
+      json.map(path => {
+        let totalGreenScore = 0;
+        path.map(node => {
+          totalGreenScore = totalGreenScore + node.data.greenScore + node.data.parkScore;
+        });
+        returnObj.push({
+          path: path,
+          totalGreenScore: totalGreenScore
+        });
       });
-      returnObj.push( {
-        path: path,
-        totalGreenScore: totalGreenScore
-      })
-    });
 
-    returnObj.sort((a, b) => (a.totalGreenScore < b.totalGreenScore) ? 1 : -1);
+      returnObj.sort((a, b) => (a.totalGreenScore < b.totalGreenScore) ? 1 : -1);
 
-    let topPathSimple = returnObj.map(p=>{
-      console.log(p);
-      let data = p.path.map( n=> {
-        return n.data;
-      })
-      return data;
-    });
+      let topPathSimple = returnObj.map(p => {
+        let data = p.path.map(n => {
+          return n.data;
+        });
+        return data;
+      });
 
-    fs.writeFile("data/pathData.json", JSON.stringify(topPathSimple[0]), function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
+      // fs.writeFile('data/pathData.json', JSON.stringify(topPathSimple[0]), function (err) {
+      //   if (err) {
+      //     console.log(err);
+      //   }
+      // });
 
-    return topPathSimple;
+      resolve(topPathSimple);
+    }).catch(err => console.error(err));
   }
 
 }

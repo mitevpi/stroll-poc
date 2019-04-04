@@ -1,4 +1,4 @@
-var query_overpass = require('./QueryOSM');
+const query_overpass = require('./QueryOSM');
 
 class StreetData {
   constructor() {}
@@ -60,7 +60,7 @@ class StreetData {
     way${roadFilter}(area:${areaId});
     node(w);
     );
-    out skel;`
+    out skel;`;
 
     query_overpass(query)
       .then(print).catch(e => console.log(e));

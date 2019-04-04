@@ -1,4 +1,4 @@
-var Vibrant = require('node-vibrant');
+const Vibrant = require('node-vibrant');
 const ntc = require('./ntc');
 
 class ColorParse {
@@ -8,27 +8,27 @@ class ColorParse {
    * Build a url request for a google street view image.
    * @param {String} lat Latitude of location.
    * @param {String} long Longitude of location.
-   * @param {String} heading Direciton of google street view image (between 0 to 360).
+   * @param {String} heading Direction of google street view image (between 0 to 360).
    * @returns {String} A url for google maps.
    */
   static BuildRequest(lat, long, heading) {
     // let location = 'location=46.414382,10.013988&';
     // let heading = 'heading=151.78&';
     let base = 'https://maps.googleapis.com/maps/api/streetview?';
-    let size = 'size=800x400&'
+    let size = 'size=800x400&';
     let location = 'location=' + String(lat) + ',' + String(long) + '&';
     let headingStr = 'heading=' + heading + '&' || 'heading=0.0&';
-    let pitch = 'pitch=-0.76&'
+    let pitch = 'pitch=-0.76&';
     let key = 'key=' +  process.env.GMAPS_KEY;
 
     return base + size + location + headingStr + pitch + key;
   }
 
   /**
-   * Get the color palette of the image from google street view at the given lat, long, and orientaiton.
+   * Get the color palette of the image from google street view at the given lat, long, and orientation.
    * @param {String} lat Latitude of location.
    * @param {String} long Longitude of location.
-   * @param {String} heading Direciton of google street view image (between 0 to 360).
+   * @param {String} heading Direction of google street view image (between 0 to 360).
    * @returns {Object} A collection of Objects containing color palette data.
    */
   static GetPalette(lat, long, heading) {
@@ -39,7 +39,7 @@ class ColorParse {
         .then(palette => {
 
           // iterate over palette objects, parse color names
-          for (var key in palette) {
+          for (let key in palette) {
             if (palette.hasOwnProperty(key)) {
               palette[key]['closestShade'] = self.GetClosestShadeName(palette[key].hex);
               palette[key]['closestColor'] = self.GetClosestColorName(palette[key].hex);
@@ -48,12 +48,12 @@ class ColorParse {
 
           resolve(palette);
         }).catch(err => console.error(err));
-    })
+    });
   }
 
   /**
    * Get the color palette of a location as names of primary colors
-   * from google street view at the given lat, long, and orientaiton. Views will be taken at 0, 90 and 180 degrees
+   * from google street view at the given lat, long, and orientation. Views will be taken at 0, 90 and 180 degrees
    * around the central point.
    * @param {String} lat Latitude of location.
    * @param {String} long Longitude of location.
@@ -71,7 +71,7 @@ class ColorParse {
         self.GetPalette(lat, long, b).then(colors => {
 
           // iterate over palette objects, parse color names
-          for (var key in colors) {
+          for (let key in colors) {
             if (colors.hasOwnProperty(key)) {
               let shade = colors[key]['closestShade'];
               returnList.push(shade);
@@ -89,7 +89,7 @@ class ColorParse {
    * Get a percentage of "greenery" visible in a 360 panorama taken at the given latitude/longitude.
    * @param {String} lat Latitude of location.
    * @param {String} long Longitude of location.
-   * @returns {Number} A decimal percentage of the prevalance of green in the field of view.
+   * @returns {Promise<Number>} A decimal percentage of the prevalence of green in the field of view.
    */
   static GetPaletteAnalysis(lat, long) {
     let self = this;
@@ -97,7 +97,7 @@ class ColorParse {
 
       self.GetPaletteNames(lat, long).then(palette => {
         let merged = palette[0].concat(palette[1]).concat(palette[2]);
-        var count = merged.reduce(function (n, val) {
+        const count = merged.reduce(function (n, val) {
           return n + (val === 'Green');
         }, 0);
         resolve(count / merged.length);
