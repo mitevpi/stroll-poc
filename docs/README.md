@@ -64,26 +64,26 @@ Build a url request for a google street view image.
 
 -   `lat` **[String][34]** Latitude of location.
 -   `long` **[String][34]** Longitude of location.
--   `heading` **[String][34]** Direciton of google street view image (between 0 to 360).
+-   `heading` **[String][34]** Direction of google street view image (between 0 to 360).
 
 Returns **[String][34]** A url for google maps.
 
 ## GetPalette
 
-Get the color palette of the image from google street view at the given lat, long, and orientaiton.
+Get the color palette of the image from google street view at the given lat, long, and orientation.
 
 ### Parameters
 
 -   `lat` **[String][34]** Latitude of location.
 -   `long` **[String][34]** Longitude of location.
--   `heading` **[String][34]** Direciton of google street view image (between 0 to 360).
+-   `heading` **[String][34]** Direction of google street view image (between 0 to 360).
 
 Returns **[Object][35]** A collection of Objects containing color palette data.
 
 ## GetPaletteNames
 
 Get the color palette of a location as names of primary colors
-from google street view at the given lat, long, and orientaiton. Views will be taken at 0, 90 and 180 degrees
+from google street view at the given lat, long, and orientation. Views will be taken at 0, 90 and 180 degrees
 around the central point.
 
 ### Parameters
@@ -102,7 +102,7 @@ Get a percentage of "greenery" visible in a 360 panorama taken at the given lati
 -   `lat` **[String][34]** Latitude of location.
 -   `long` **[String][34]** Longitude of location.
 
-Returns **[Number][36]** A decimal percentage of the prevalance of green in the field of view.
+Returns **[Promise][36]&lt;[Number][37]>** A decimal percentage of the prevalence of green in the field of view.
 
 ## GetClosestShadeName
 
@@ -130,11 +130,11 @@ Get a collection of public parks from Yelp within the given radius from the orig
 
 ### Parameters
 
--   `lat` **[Number][36]** Latitude of location.
--   `long` **[Number][36]** Longitude of location.
--   `radius` **[Number][36]** The radius of the bounding geometry from the given lat/long origin.
+-   `lat` **[Number][37]** Latitude of location.
+-   `long` **[Number][37]** Longitude of location.
+-   `radius` **[Number][37]** The radius of the bounding geometry from the given lat/long origin.
 
-Returns **[Array][37]** A collection of nearby parks.
+Returns **[Promise][36]&lt;[Array][38]>** A collection of nearby parks.
 
 ## GetRandomPointGrid
 
@@ -143,12 +143,12 @@ lat/long point.
 
 ### Parameters
 
--   `lat` **[Number][36]** Latitude of location.
--   `long` **[Number][36]** Longitude of location.
--   `radius` **[Number][36]** The radius of the bounding geometry from the given lat/long origin.
+-   `lat` **[Number][37]** Latitude of location.
+-   `long` **[Number][37]** Longitude of location.
+-   `radius` **[Number][37]** The radius of the bounding geometry from the given lat/long origin.
 -   `numPoints` **[String][34]** How many points to return
 
-Returns **[Array][37]** A collection of Turf.JS points.
+Returns **[Array][38]&lt;turf.Point>** A collection of Turf.JS points.
 
 ## GetPointGrid
 
@@ -157,12 +157,12 @@ lat/long point.
 
 ### Parameters
 
--   `lat` **[Number][36]** Latitude of location.
--   `long` **[Number][36]** Longitude of location.
--   `radius` **[Number][36]** The radius of the bounding geometry from the given lat/long origin.
--   `pointDist` **[Number][36]** How far apart the points should be in the point grid.
+-   `lat` **[Number][37]** Latitude of location.
+-   `long` **[Number][37]** Longitude of location.
+-   `radius` **[Number][37]** The radius of the bounding geometry from the given lat/long origin.
+-   `pointDist` **[Number][37]** How far apart the points should be in the point grid.
 
-Returns **[Array][37]** A collection of Turf.JS points.
+Returns **[Array][38]&lt;turf.Point>** A collection of Turf.JS points.
 
 ## GetGraph
 
@@ -171,11 +171,8 @@ distance between points for creation of a grid.
 
 ### Parameters
 
--   `lat` **[Number][36]** Latitude of location.
--   `long` **[Number][36]** Longitude of location.
--   `radius` **[Number][36]** The radius of the bounding geometry from the given lat/long origin.
--   `pointDist` **[Number][36]** How far apart the points should be in the point grid.
--   `linkTolerance` **[String][34]** The minimum distance between points to be considered a "link".
+-   `grid` **[Array][38]&lt;turf.Point>** A grid of turf.js points
+-   `linkTolerance` **[Number][37]** The minimum distance between points to be considered a 'link'.
 
 Returns **Graph** A ngraph.graph object.
 
@@ -186,22 +183,19 @@ distance between points for creation of a grid.
 
 ### Parameters
 
--   `lat` **[Number][36]** Latitude of location.
--   `long` **[Number][36]** Longitude of location.
--   `radius` **[Number][36]** The radius of the bounding geometry from the given lat/long origin.
--   `pointDist` **[Number][36]** How far apart the points should be in the point grid.
--   `linkTolerance` **[String][34]** The minimum distance between points to be considered a "link".
+-   `grid` **[Array][38]&lt;turf.Point>** A grid of turf.js points
+-   `linkTolerance` **[String][34]** The minimum distance between points to be considered a 'link'.
 
 Returns **[Object][35]** A ngraph.graph object.
 
 ## FindPath
 
-Find a path between two nodes on the graph, weighted by the "Green Score" weight of the nodes
+Find a path between two nodes on the graph, weighted by the 'Green Score' weight of the nodes
 along the potential path.
 
 ### Parameters
 
--   `graph` **Graph** A ngraph.graph object.
+-   `graph` **Graph** A ngraph.graph object with the nature-score data properties applied.
 -   `idA` **[String][34]** Node ID of start point.
 -   `idB` **[String][34]** Node ID of end point.
 
@@ -214,13 +208,9 @@ distance between points for creation of a grid.
 
 ### Parameters
 
--   `lat` **[Number][36]** Latitude of location.
--   `long` **[Number][36]** Longitude of location.
--   `radius` **[Number][36]** The radius of the bounding geometry from the given lat/long origin.
--   `pointDist` **[Number][36]** How far apart the points should be in the point grid.
--   `linkTolerance` **[Number][36]** The minimum distance between points to be considered a "link".
+-   `graph` **Graph** A ngraph.graph object with the nature-score data properties applied.
 
-Returns **[Array][37]** An array of all possible paths;
+Returns **[Array][38]** An array of all possible paths;
 
 ## FindTopNaturePaths
 
@@ -229,9 +219,9 @@ distance between points for creation of a grid. Sort with the top nature walks f
 
 ### Parameters
 
--   `json` **[Object][35]** A serialized version of the JSON data comprising a ngraph.graph.
+-   `json` **[Object][35]** The raw path output of FindNaturePaths().
 
-Returns **[Array][37]** A list of paths, sorted from most exposed to nature to least.
+Returns **[Array][38]** A list of paths, sorted from most exposed to nature to least.
 
 [1]: #colorparse
 
@@ -303,6 +293,8 @@ Returns **[Array][37]** A list of paths, sorted from most exposed to nature to l
 
 [35]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[36]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[36]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[37]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[37]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[38]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

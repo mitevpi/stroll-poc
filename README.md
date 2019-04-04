@@ -3,7 +3,7 @@
 
 # Stroll
 
-[![Generic badge](https://img.shields.io/badge/APP-GITHUB-Green.svg)](https://github.com/Brandoncyu/aechackathon2019) [![Generic badge](https://img.shields.io/badge/DOCUMENTATION-MD-Green.svg)](docs/)
+[![Generic badge](https://img.shields.io/badge/App-Source-Green.svg)](https://github.com/Brandoncyu/aechackathon2019) [![Generic badge](https://img.shields.io/badge/Documentation-MD-Green.svg)](docs/README.md) [![Generic badge](https://img.shields.io/badge/Samples-JS-Green.svg)](samples/strollSamples.js)
 
 TT AEC Hackathon 2019 - Seattle Project
 
@@ -37,14 +37,31 @@ const RouteData = require('./RouteData');
 
 ### Methods
 
+#### Pathfinding Data
+
+Building graphs and calculating paths of travel.
+
+```js
+
+// Create a custom grid around a origin lat/long
+let grid = RouteData.GetPointGrid(47.660273, -122.409887, 1, 0.5);
+
+RouteData.GetGraph(grid, 0.7) // get a graph from point grid
+  .then(graph => RouteData.FindNaturePaths(graph)) // find all possible paths
+  .then(paths => RouteData.FindTopNaturePaths(paths)) // return sorted paths
+  .then(results => {
+    console.log(results); // do something with results
+  }).catch(err => console.error(err));
+```
+
 
 #### Yelp Data
 
 Yelp data for nearby public parks/green amenities.
 
 ```js
-YelpData.ParkSearch(47.660273, -122.409887, 1000).then(d => {
-  console.log(d);
+YelpData.ParkSearch(47.660273, -122.409887, 1000).then(results => {
+  console.log(results);
 });
 ```
 
@@ -68,8 +85,8 @@ ColorParse.GetPalette(46.414382, 10.013988, 151.78).then(colors => {
 ```
 
 ```js
-ColorParse.GetPaletteNames(46.414382, 10.013988).then(result => {
-  console.log(result);
+ColorParse.GetPaletteNames(46.414382, 10.013988).then(names => {
+  console.log(names);
 })
 ```
 
@@ -79,47 +96,12 @@ ColorParse.GetPaletteAnalysis(47.660259, -122.408417).then(result => {
 })
 ```
 
-#### Pathfinding Data
+## Development
 
-Building graphs and calculating paths of travel.
+### Building
 
-```js
-RouteData.GetGraphData(47.660273, -122.409887, 1, 0.5, 0.6).then(x => {
-  console.log(x);
-});
-```
+The module can be built by running `npm pack` in the root directory of this repository. Documentation can be built using the Documentation module from npm, and by running `npm run doc` in the root directory of this repository.
 
-```js
-RouteData.GetGraph(47.660273, -122.409887, 1, 0.5, 0.6).then(result => {
-  console.log(result);
-})
-```
+### Testing
 
-```js
-RouteData.GetGraph(47.660273, -122.409887, 1, 0.5, 0.7).then(x => {
-  let nodes = [];
-
-  x.forEachLink(function (link) {
-    console.log(link);
-  });
-
-  x.forEachNode(function (node) {
-    nodes.push(node);
-  });
-
-  console.log(nodes);
-})
-```
-
-```js
-RouteData.FindNaturePaths(47.660273, -122.409887, 1, 0.5, 0.7).then(x => {
-  console.log(x);
-});
-```
-
-```js
-RouteData.FindNaturePaths(47.660273, -122.409887, 1, 0.5, 0.7).then(x => {
-  let result = RouteData.FindTopNaturePaths(x);
-  console.log(result);
-});
-```
+Testing is not yet implemented.
